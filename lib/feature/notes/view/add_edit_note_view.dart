@@ -66,7 +66,7 @@ class AddEditNoteView extends StatelessWidget {
               SizedBox(height: 12),
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: controller.selectedCategory.value,
+                  initialValue: controller.selectedCategory.value,
                   decoration: InputDecoration(
                     labelText: 'Category',
                     border: OutlineInputBorder(),

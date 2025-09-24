@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_notifications/easy_notifications.dart'
-    show EasyNotifications;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,6 @@ class TaskController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTasks();
-    EasyNotifications.init();
   }
 
   /// Fetch tasks for the logged-in user
@@ -33,7 +31,6 @@ class TaskController extends GetxController {
           tasks.value = snapshot.docs
               .map((doc) => TaskModel.fromMap(doc.data()))
               .toList();
-          scheduleUpcomingTasks();
         });
   }
 
@@ -66,7 +63,7 @@ class TaskController extends GetxController {
           .set(task.toMap());
 
       EasyLoading.showSuccess("Task Added");
-      scheduleTaskNotification(task);
+
     } catch (e) {
       EasyLoading.showError("Error: $e");
     } finally {
@@ -86,7 +83,6 @@ class TaskController extends GetxController {
           .update(task.toMap());
 
       EasyLoading.showSuccess("Task Updated");
-      scheduleTaskNotification(task);
     } catch (e) {
       EasyLoading.showError("Error: $e");
     }
@@ -109,28 +105,8 @@ class TaskController extends GetxController {
     }
   }
 
-  void scheduleTaskNotification(TaskModel task) {
-    final now = DateTime.now();
-    final difference = task.dueDate.difference(now);
-
-    if (difference.inMinutes > 0 && difference.inMinutes <= 60) {
-      EasyNotifications.scheduleMessage(
-        title: 'Upcoming Task: ${task.title}',
-        body:
-            'Due at ${task.dueDate.hour}:${task.dueDate.minute.toString().padLeft(2, '0')}',
-        scheduledDate: task.dueDate,
-      );
-    }
-  }
+ 
 
   /// Schedule notifications for all upcoming tasks within next hour
-  void scheduleUpcomingTasks() {
-    final now = DateTime.now();
-    for (var task in tasks) {
-      final difference = task.dueDate.difference(now);
-      if (difference.inMinutes > 0 && difference.inMinutes <= 60) {
-        scheduleTaskNotification(task);
-      }
-    }
-  }
+  
 }
